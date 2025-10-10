@@ -5,13 +5,14 @@ void	printer(std::vector<std::string> &printed)
 	int i = 0;
 	while(i < printed.size())
 	{
+		std::cout << "index of the variable " <<i << " :";
 		std::cout << printed[i];
+		std::cout << '\n';
+
 		i++;
 	}
-	std::cout << '\n';
+	// std::cout << '\n';
 }
-// JOIN command implementation
-// This file will contain the JOIN command logic for IRC
 // std::vector<std::string> ft_split_request(std::string &request,
 // 	const std::string &delimiter)
 // {
@@ -97,7 +98,9 @@ int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,st
 
 	std::vector<std::string> divided = ft_split_request(request, " ");
 	if (divided.size() < 2)
-		throw("error not enough parametres \n");
+		{
+			std::cout << "461, Not enough parameters" << std::endl;
+		}
 	if (divided[0] == "JOIN")
 	{
 		std::string chans = divided[1];
@@ -117,25 +120,26 @@ int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,st
 	}
 	return (0); // succes
 }
-int main(int ac, char **av)
-{
-	std::string request = av[1];
-	std::vector<std::string> channels;
-	std::vector<std::string> passwords;
-			printer(channels);
-		printer(passwords);
-	if(valid_syntax(request,channels,passwords) == 1)
-	{
-		std::cout << "error happened" << std::endl;
-		return 1;
-	}
-		std::cout << "succes" << std::endl;
-		printer(channels);
-		printer(passwords);
 
-		return 0;
+// int main(int ac, char **av)
+// {
+// 	std::string request = av[1];
+// 	std::vector<std::string> channels;
+// 	std::vector<std::string> passwords;
+// 			printer(channels);
+// 		printer(passwords);
+// 	if(valid_syntax(request,channels,passwords) == 1)
+// 	{
+// 		std::cout << "error happened" << std::endl;
+// 		return 1;
+// 	}
+// 		std::cout << "succes" << std::endl;
+// 		printer(channels);
+// 		printer(passwords);
 
-}
+// 		return 0;
+
+// }
 // void	addMember(int client_fd, const std::string &nick)
 // {
 

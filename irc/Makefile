@@ -2,9 +2,9 @@ NAME = ircserv
 
 CXX = c++
 
-CXXFLAGS = -Wextra -Wall -Werror -std=c++98 -I./Includes
+CXXFLAGS = -std=c++98 -I./Includes #-Wextra -Wall -Werror 
 
-SRC = $(wildcard *.cpp Server/*.cpp Client/*.cpp Client/Commands/*.cpp)
+SRC = $(wildcard Client/Commands/*.cpp)
 
 OBJ = $(SRC:.cpp=.o)
 
