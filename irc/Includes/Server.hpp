@@ -21,6 +21,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <vector>
+#include "Channel.hpp"
 
 class Server
 {
@@ -30,7 +31,7 @@ class Server
 	int fd_count;
 	int listener;
 	static std::string _port;
-	// std::vector<channel> channels;
+	std::map<std::string, Channel> channels;
 	void add_to_pfds(const int &newfd);
 	void del_from_pfds(const int &i);
 	void handle_new_connection();

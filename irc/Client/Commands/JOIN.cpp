@@ -108,38 +108,77 @@ int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,st
 			chans.erase(0, 1);
 		out_channels = ft_split_request(chans, ",");
 		index_error = check_allchannels_name(out_channels);
-		printer(out_channels);
+		// printer(out_channels);
 		if (index_error != 0)
 		{
 			std::cout << "error 403 invalid channel name at index " << index_error << std::endl;
 			return (1); // error
 		}
 		std::string passowrds = divided[2];
+		std::cout << "divided 2" << divided[2] << std::endl;
 		out_keys = ft_split_request(passowrds,",");
-		printer(out_keys);
+		// printer(out_keys);
 	}
 	return (0); // succes
 }
+void Channel::create_channel(const std::string& channel_name, int creator_fd)
+{
+    this->name = channel_name;
+    this->members.insert(creator_fd);
+    this->invite_only = false;
+    this->topic_restricted = false;
+    this->user_limit = 0;
+    this->password = "";
+}
+void Channel::join_channel(int client_fd, const std::string& channel_name, const std::string& key)
+{
+    // Check if password is required and matches
+    if (!this->password.empty() && this->password != key)
+    {
+        std::cout << "475 ERR_BADCHANNELKEY" << std::endl;
+        return;
+    }
+    
+    // Check invite-only mode
+    if (this->invite_only)
+    {
+        // Check if user is invited
+        std::cout << "473 ERR_INVITEONLYCHAN" << std::endl;
+        return;
+    }
+    
+    // Check user limit
+    if (this->user_limit > 0 && this->members.size() >= this->user_limit)
+    {
+		std::cout << "471 ERR_CHANNELISFULL" << std::endl;
+        return;
+    }
+    
+    this->addMember(client_fd);
+}
 
-// int main(int ac, char **av)
-// {
-// 	std::string request = av[1];
-// 	std::vector<std::string> channels;
-// 	std::vector<std::string> passwords;
-// 			printer(channels);
-// 		printer(passwords);
-// 	if(valid_syntax(request,channels,passwords) == 1)
-// 	{
-// 		std::cout << "error happened" << std::endl;
-// 		return 1;
-// 	}
-// 		std::cout << "succes" << std::endl;
-// 		printer(channels);
-// 		printer(passwords);
+int main(int ac, char **av)
+{
+	std::string request = av[1];
+	std::vector<std::string> channels;
+	std::vector<std::string> passwords;
+		// 	printer(channels);
+		// std::cout << "passwords :";
 
-// 		return 0;
+		// printer(passwords);
+	if(valid_syntax(request,channels,passwords) == 1)
+	{
+		std::cout << "error happened" << std::endl;
+		return 1;
+	}
+		std::cout << "succes" << std::endl;
+		printer(channels);
+		std::cout << "passwords :";
+		printer(passwords);
 
-// }
+		return 0;
+
+}
 // void	addMember(int client_fd, const std::string &nick)
 // {
 
