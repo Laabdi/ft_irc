@@ -36,7 +36,7 @@ class Channel
     //  operations
     // std::vector<std::string> ft_split_request(std::string &request, const std::string &delimiter);
     void join_channel(int client_fd, const std::string& channel_name, const std::string& key);
-    void create_channel(const std::string& channel_name, int creator_fd);
+    void create_channel(const std::string& channel_name, int creator_fd,const std::string& channel_mdp);
     void addMember(int client_fd);
     void removeMember(int client_fd);
     bool isMember(int client_fd);

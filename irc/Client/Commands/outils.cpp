@@ -1,8 +1,5 @@
 #include <Channel.hpp>
 
-// Definitions moved out of Channel.hpp to keep header lean and avoid ODR issues.
-// Stub implementations below — adjust once Channel class fields are finalized.
-
 const std::string &Channel::getName() const
 {
     return(this->name);

@@ -2,13 +2,14 @@
 
 void	printer(std::vector<std::string> &printed)
 {
-	int i = 0;
-	while(i < printed.size())
+	int	i;
+
+	i = 0;
+	while (i < printed.size())
 	{
-		std::cout << "index of the variable " <<i << " :";
+		std::cout << "index of the variable " << i << " :";
 		std::cout << printed[i];
 		std::cout << '\n';
-
 		i++;
 	}
 	// std::cout << '\n';
@@ -35,24 +36,52 @@ void	printer(std::vector<std::string> &printed)
 // 	lines.push_back(request.substr(start));
 // 	return (lines);
 // }
-std::vector<std::string> ft_split_request(const std::string &request,const std::string &delimiter)
+std::vector<std::string> ft_split_space(const std::string &request,
+	const std::string &delimiter)
 {
-    std::vector<std::string> parts;
-    if (delimiter.empty())
-    {
-        parts.push_back(request);
-        return parts;
-    }
+	size_t	start;
+	size_t	pos;
 
-    size_t start = 0;
-    size_t pos;
-    while ((pos = request.find(delimiter, start)) != std::string::npos)
-    {
-        parts.push_back(request.substr(start, pos - start));
-        start = pos + delimiter.length();
-    }
-    parts.push_back(request.substr(start));
-    return parts;
+	std::vector<std::string> parts;
+	if (delimiter.empty())
+	{
+		parts.push_back(request);
+		return (parts);
+	}
+	start = 0;
+	while ((pos = request.find(delimiter, start)) != std::string::npos)
+	{
+		std::string part = request.substr(start, pos - start);
+		if (!part.empty())
+			parts.push_back(part);
+		start = pos + delimiter.length();
+	}
+	std::string last_part = request.substr(start);
+	if (!last_part.empty())
+		parts.push_back(last_part);
+	return (parts);
+}
+// doesnt ignore empty strings
+std::vector<std::string> ft_split_request(const std::string &request,
+	const std::string &delimiter)
+{
+	size_t	start;
+	size_t	pos;
+
+	std::vector<std::string> parts;
+	if (delimiter.empty())
+	{
+		parts.push_back(request);
+		return (parts);
+	}
+	start = 0;
+	while ((pos = request.find(delimiter, start)) != std::string::npos)
+	{
+		parts.push_back(request.substr(start, pos - start));
+		start = pos + delimiter.length();
+	}
+	parts.push_back(request.substr(start));
+	return (parts);
 }
 // to looop with it after
 int	check_channel_name(std::string &c_name)
@@ -69,8 +98,10 @@ int	check_allchannels_name(std::vector<std::string> &channels)
 {
 	for (int i = 0; i < channels.size(); i++)
 	{
-		if (check_channel_name(channels[i]) == 0)
+		if (check_channel_name(channels[i]) == 0){
+			std::cout << "error bad name" << std::endl;
 			return (i); // returning which on is not valid
+		}
 	}
 	return (0); // succes
 }
@@ -91,16 +122,17 @@ int	count_char_in_string(std::string &stringg, char c)
 	return (count);
 }
 
-int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,std::vector<std::string> &out_keys)
+int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,
+		std::vector<std::string> &out_keys)
 {
 	int	bad_index;
 	int	index_error;
 
-	std::vector<std::string> divided = ft_split_request(request, " ");
+	std::vector<std::string> divided = ft_split_space(request, " ");
 	if (divided.size() < 2)
-		{
-			std::cout << "461, Not enough parameters" << std::endl;
-		}
+	{
+		std::cout << "461, Not enough parameters" << std::endl;
+	}
 	if (divided[0] == "JOIN")
 	{
 		std::string chans = divided[1];
@@ -115,69 +147,68 @@ int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,st
 			return (1); // error
 		}
 		std::string passowrds = divided[2];
-		std::cout << "divided 2" << divided[2] << std::endl;
-		out_keys = ft_split_request(passowrds,",");
+		std::cout << "divided 2 :" << divided[2] << std::endl;
+		out_keys = ft_split_request(passowrds, ",");
 		// printer(out_keys);
 	}
 	return (0); // succes
 }
-void Channel::create_channel(const std::string& channel_name, int creator_fd)
+void Channel::create_channel(const std::string &channel_name, int creator_fd,const std::string &channel_mdp)
 {
-    this->name = channel_name;
-    this->members.insert(creator_fd);
-    this->invite_only = false;
-    this->topic_restricted = false;
-    this->user_limit = 0;
-    this->password = "";
+	this->name = channel_name;
+	this->members.insert(creator_fd);
+	this->invite_only = false;
+	this->topic_restricted = false;
+	this->user_limit = 0;
+	if (channel_name.empty())
+		this->password = "";
+	this->password = channel_mdp;
 }
-void Channel::join_channel(int client_fd, const std::string& channel_name, const std::string& key)
+void Channel::join_channel(int client_fd, const std::string &channel_name,
+	const std::string &key)
 {
-    // Check if password is required and matches
-    if (!this->password.empty() && this->password != key)
-    {
-        std::cout << "475 ERR_BADCHANNELKEY" << std::endl;
-        return;
-    }
-    
-    // Check invite-only mode
-    if (this->invite_only)
-    {
-        // Check if user is invited
-        std::cout << "473 ERR_INVITEONLYCHAN" << std::endl;
-        return;
-    }
-    
-    // Check user limit
-    if (this->user_limit > 0 && this->members.size() >= this->user_limit)
-    {
+	// Check if password is required and matches
+	if (!this->password.empty() && this->password != key)
+	{
+		std::cout << "475 ERR_BADCHANNELKEY" << std::endl;
+		return ;
+	}
+	// Check invite-only mode
+	if (this->invite_only)
+	{
+		// Check if user is invited
+		std::cout << "473 ERR_INVITEONLYCHAN" << std::endl;
+		return ;
+	}
+	// Check user limit
+	if (this->user_limit > 0 && this->members.size() >= this->user_limit)
+	{
 		std::cout << "471 ERR_CHANNELISFULL" << std::endl;
-        return;
-    }
-    
-    this->addMember(client_fd);
+		return ;
+	}
+	this->addMember(client_fd);
 }
 
-int main(int ac, char **av)
+
+int	main(int ac, char **av)
 {
 	std::string request = av[1];
 	std::vector<std::string> channels;
 	std::vector<std::string> passwords;
-		// 	printer(channels);
-		// std::cout << "passwords :";
-
-		// printer(passwords);
-	if(valid_syntax(request,channels,passwords) == 1)
+		printer(channels);
+	std::cout << "passwords :";
+	printer(passwords);
+	if (valid_syntax(request, channels, passwords) == 1)
 	{
 		std::cout << "error happened" << std::endl;
-		return 1;
+		return (1);
 	}
-		std::cout << "succes" << std::endl;
-		printer(channels);
-		std::cout << "passwords :";
-		printer(passwords);
-
-		return 0;
-
+	std::cout << "succes" << std::endl;
+	std::cout << "channels name :" << std::endl;
+	printer(channels);
+	std::cout << "passwords :" << std::endl;
+	printer(passwords);
+	return (0);
 }
 // void	addMember(int client_fd, const std::string &nick)
 // {
