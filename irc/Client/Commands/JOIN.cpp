@@ -12,7 +12,7 @@ void	printer(std::vector<std::string> &printed)
 		std::cout << '\n';
 		i++;
 	}
-	// std::cout << '\n';
+	std::cout << '\n';
 }
 // std::vector<std::string> ft_split_request(std::string &request,
 // 	const std::string &delimiter)
@@ -99,8 +99,8 @@ int	check_allchannels_name(std::vector<std::string> &channels)
 	for (int i = 0; i < channels.size(); i++)
 	{
 		if (check_channel_name(channels[i]) == 0){
-			std::cout << "error bad name" << std::endl;
-			return (i); // returning which on is not valid
+			// std::cout << "error bad name" << std::endl;
+			return (1); // returning which on is not valid
 		}
 	}
 	return (0); // succes
@@ -132,6 +132,7 @@ int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,
 	if (divided.size() < 2)
 	{
 		std::cout << "461, Not enough parameters" << std::endl;
+		return 1;
 	}
 	if (divided[0] == "JOIN")
 	{
@@ -146,9 +147,12 @@ int	valid_syntax(std::string &request, std::vector<std::string> &out_channels,
 			std::cout << "error 403 invalid channel name at index " << index_error << std::endl;
 			return (1); // error
 		}
-		std::string passowrds = divided[2];
-		std::cout << "divided 2 :" << divided[2] << std::endl;
-		out_keys = ft_split_request(passowrds, ",");
+		if(divided.size() > 2)
+		{
+			std::string passowrds = divided[2];
+			// std::cout << "divided 2 :" << divided[2] << std::endl;
+			out_keys = ft_split_request(passowrds, ",");
+		}
 		// printer(out_keys);
 	}
 	return (0); // succes
@@ -189,25 +193,39 @@ void Channel::join_channel(int client_fd, const std::string &channel_name,
 	this->addMember(client_fd);
 }
 
-
-int	main(int ac, char **av)
+Channel create_channel(char **av)
 {
+	Channel test;
 	std::string request = av[1];
 	std::vector<std::string> channels;
 	std::vector<std::string> passwords;
-		printer(channels);
-	std::cout << "passwords :";
-	printer(passwords);
 	if (valid_syntax(request, channels, passwords) == 1)
 	{
-		std::cout << "error happened" << std::endl;
-		return (1);
+		std::cout << "error happened in channel name" << std::endl;
 	}
-	std::cout << "succes" << std::endl;
-	std::cout << "channels name :" << std::endl;
+	std::cout << "channels name :";
 	printer(channels);
-	std::cout << "passwords :" << std::endl;
+	std::cout << "passwords :";
 	printer(passwords);
+	int i = 0;
+	while(i < channels.size())
+	{
+		Channel chan;
+		chan.name = channels[i];
+		chan.password = passwords[i];
+	}
+	return test;
+}
+
+int	main(int ac, char **av)
+{
+	  if (ac < 2)
+    {
+        std::cout << "Usage: " << av[0] << " <JOIN command>" << std::endl;
+        std::cout << "Example: " << av[0] << " \"JOIN #channel1,#channel2 pass1,pass2\"" << std::endl;
+        return 1;
+    }
+	create_channel(av);
 	return (0);
 }
 // void	addMember(int client_fd, const std::string &nick)
