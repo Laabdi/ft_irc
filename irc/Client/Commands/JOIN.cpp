@@ -203,17 +203,18 @@ Channel create_channel(char **av)
 	{
 		std::cout << "error happened in channel name" << std::endl;
 	}
-	std::cout << "channels name :";
-	printer(channels);
-	std::cout << "passwords :";
-	printer(passwords);
+	// std::cout << "channels name :";
+	// printer(channels);
+	// std::cout << "passwords :";
+	// printer(passwords);
 	int i = 0;
-	while(i < channels.size())
-	{
-		Channel chan;
-		chan.name = channels[i];
-		chan.password = passwords[i];
-	}
+	// while(i < channels.size())
+	// {
+	// 	Channel chan;
+	// 	chan.name = channels[i];
+	// 	chan.password = passwords[i];
+	// 	i++;
+	// }
 	return test;
 }
 
